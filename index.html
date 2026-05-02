@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CiberSeguro — Guía de Ciberseguridad</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --bg2: #0f1629;
+    --bg3: #131c35;
+    --accent: #00e5a0;
+    --accent2: #0084ff;
+    --accent3: #ff4d6d;
+    --text: #e8edf8;
+    --text2: #8a9bbf;
+    --border: rgba(255,255,255,0.07);
+    --card: rgba(255,255,255,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,15,30,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 20px;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--text2); text-decoration: none;
+    font-size: 14px; font-weight: 400;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-qr-btn {
+    background: var(--accent); color: #0a0f1e;
+    border: none; cursor: pointer;
+    padding: 8px 18px; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .nav-qr-btn:hover { opacity: 0.85; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 80px 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,160,0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(0,132,255,0.07) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3);
+    color: var(--accent); border-radius: 100px;
+    padding: 6px 16px; font-size: 13px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--accent); border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p {
+    font-size: 1.15rem; color: var(--text2);
+    max-width: 560px; line-height: 1.8;
+    animation: fadeUp 0.6s 0.2s ease both;
+    margin-bottom: 2.5rem;
+  }
+  .hero-btns {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--accent); color: #0a0f1e;
+    border: none; cursor: pointer;
+    padding: 14px 28px; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 500;
+    text-decoration: none;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
+  .btn-secondary {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border); cursor: pointer;
+    padding: 14px 28px; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 400;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.2); background: var(--card); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  /* GRID STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 0 2rem;
+    max-width: 900px;
+    margin: 0 auto 5rem;
+  }
+  .stat {
+    background: var(--bg2);
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem; font-weight: 800;
+    color: var(--accent); margin-bottom: 4px;
+  }
+  .stat-label { font-size: 13px; color: var(--text2); }
+
+  /* SECTIONS */
+  section { padding: 5rem 2rem; max-width: 960px; margin: 0 auto; }
+  .section-tag {
+    font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 700; letter-spacing: -1px;
+    margin-bottom: 1rem;
+  }
+  .section-sub { color: var(--text2); max-width: 560px; margin-bottom: 3rem; }
+
+  /* WHAT IS */
+  .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .what-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: border-color 0.3s;
+  }
+  .what-card:hover { border-color: rgba(0,229,160,0.3); }
+  .what-icon {
+    width: 44px; height: 44px;
+    background: rgba(0,229,160,0.1);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 1rem;
+  }
+  .what-card h3 { font-family: 'Syne',sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .what-card p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+  /* TIPS */
+  .tips-list { display: flex; flex-direction: column; gap: 1rem; }
+  .tip {
+    display: flex; gap: 1.5rem; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .tip:hover { border-color: rgba(0,132,255,0.3); transform: translateX(4px); }
+  .tip-num {
+    font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800;
+    color: rgba(0,229,160,0.2); min-width: 40px; line-height: 1;
+  }
+  .tip-content h3 { font-size: 1rem; font-weight: 500; margin-bottom: 4px; }
+  .tip-content p { font-size: 14px; color: var(--text2); }
+
+  /* THREATS */
+  .threats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+  .threat {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem;
+    border-left: 3px solid transparent;
+    transition: border-left-color 0.3s;
+  }
+  .threat:hover { border-left-color: var(--accent3); }
+  .threat-badge {
+    display: inline-block; font-size: 11px; font-weight: 500;
+    padding: 3px 10px; border-radius: 100px;
+    background: rgba(255,77,109,0.15); color: var(--accent3);
+    margin-bottom: 0.75rem;
+  }
+  .threat h3 { font-size: 1rem; font-weight: 500; margin-bottom: 6px; }
+  .threat p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* PASSWORDS */
+  .pwd-section { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 3rem; }
+  .pwd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .pwd-bad, .pwd-good {
+    border-radius: 12px; padding: 1.5rem;
+  }
+  .pwd-bad { background: rgba(255,77,109,0.08); border: 1px solid rgba(255,77,109,0.2); }
+  .pwd-good { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); }
+  .pwd-label { font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; }
+  .pwd-bad .pwd-label { color: var(--accent3); }
+  .pwd-good .pwd-label { color: var(--accent); }
+  .pwd-example {
+    font-family: 'DM Sans', monospace; font-size: 1.3rem;
+    padding: 10px 14px; border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 0.75rem; letter-spacing: 2px;
+  }
+  .pwd-tip { font-size: 13px; color: var(--text2); }
+
+  /* QR SECTION */
+  .qr-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .qr-section h2 { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:700; margin-bottom:0.5rem; }
+  .qr-section p { color:var(--text2); font-size:14px; margin-bottom:2rem; }
+  #qr-url-input {
+    width: 100%; padding: 12px 16px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    margin-bottom: 1rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  #qr-url-input:focus { border-color: rgba(0,229,160,0.5); }
+  #qr-generate-btn {
+    background: var(--accent); color: #0a0f1e;
+    border: none; cursor: pointer;
+    padding: 12px 28px; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    margin-bottom: 2rem;
+    transition: opacity 0.2s;
+  }
+  #qr-generate-btn:hover { opacity: 0.85; }
+  #qrcode {
+    display: flex; justify-content: center; align-items: center;
+    background: white; border-radius: 14px;
+    padding: 20px; display: inline-block;
+  }
+  #qrcode canvas, #qrcode img { display: block; }
+  .qr-hint { font-size: 12px; color: var(--text2); margin-top: 1rem; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    text-align: center; padding: 2rem;
+    color: var(--text2); font-size: 13px;
+  }
+  footer span { color: var(--accent); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2.5rem;
+    max-width: 420px; width: 90%; text-align: center;
+  }
+  .modal h3 { font-family:'Syne',sans-serif; font-size:1.4rem; margin-bottom:0.5rem; }
+  .modal p { color:var(--text2); font-size:14px; margin-bottom:1.5rem; }
+  #modal-qr { display:inline-block; background:white; border-radius:12px; padding:16px; margin-bottom:1rem; }
+  .modal-close {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text); cursor: pointer;
+    padding: 10px 24px; border-radius: 8px;
+    font-family:'DM Sans',sans-serif; font-size:14px;
+  }
+
+  @media (max-width: 640px) {
+    .what-grid, .pwd-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    section { padding: 3rem 1rem; }
+    .hero { padding: 80px 1rem 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Ciber<span>Seguro</span></div>
+  <ul class="nav-links">
+    <li><a href="#que-es">¿Qué es?</a></li>
+    <li><a href="#tips">Consejos</a></li>
+    <li><a href="#amenazas">Amenazas</a></li>
+    <li><a href="#contrasenas">Contraseñas</a></li>
+    <li><a href="#compartir">Compartir</a></li>
+  </ul>
+  <button class="nav-qr-btn" onclick="openModal()">📱 QR</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Tu seguridad digital importa</div>
+  <h1>Protégete en el<br><em>mundo digital</em></h1>
+  <p>La ciberseguridad no es solo para expertos. Aprende cómo proteger tu información personal, tus cuentas y tus dispositivos con pasos simples.</p>
+  <div class="hero-btns">
+    <a href="#que-es" class="btn-primary">Empezar a aprender</a>
+    <a href="#compartir" class="btn-secondary">Compartir página ↗</a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div style="padding: 0 2rem 5rem; max-width:960px; margin:0 auto;">
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">2,200+</div>
+      <div class="stat-label">Ataques diarios a nivel mundial</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">81%</div>
+      <div class="stat-label">De brechas usan contraseñas débiles</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">39 seg</div>
+      <div class="stat-label">Cada cuánto ocurre un ciberataque</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">95%</div>
+      <div class="stat-label">De incidentes son error humano</div>
+    </div>
+  </div>
+</div>
+
+<!-- QUÉ ES -->
+<section id="que-es">
+  <div class="section-tag">Fundamentos</div>
+  <h2 class="section-title">¿Qué es la ciberseguridad?</h2>
+  <p class="section-sub">Es el conjunto de prácticas, herramientas y conocimientos para proteger sistemas, redes y datos contra ataques digitales.</p>
+  <div class="what-grid">
+    <div class="what-card">
+      <div class="what-icon">🔐</div>
+      <h3>Confidencialidad</h3>
+      <p>Solo las personas autorizadas pueden acceder a la información. Tus datos privados permanecen privados.</p>
+    </div>
+    <div class="what-card">
+      <div class="what-icon">✅</div>
+      <h3>Integridad</h3>
+      <p>La información no ha sido alterada sin permiso. Los datos que recibes son exactamente los que se enviaron.</p>
+    </div>
+    <div class="what-card">
+      <div class="what-icon">⚡</div>
+      <h3>Disponibilidad</h3>
+      <p>Los sistemas y datos están accesibles cuando los necesitas, sin interrupciones por ataques o fallos.</p>
+    </div>
+    <div class="what-card">
+      <div class="what-icon">🛡️</div>
+      <h3>¿Por qué importa?</h3>
+      <p>Tus fotos, mensajes, cuentas bancarias y datos personales viven en línea. Protegerlos es tan importante como cerrar la puerta de tu casa.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TIPS -->
+<section id="tips">
+  <div class="section-tag">Aplicación práctica</div>
+  <h2 class="section-title">Cómo protegerte hoy mismo</h2>
+  <p class="section-sub">Acciones concretas que puedes aplicar ahora, sin ser experto en tecnología.</p>
+  <div class="tips-list">
+    <div class="tip">
+      <div class="tip-num">01</div>
+      <div class="tip-content">
+        <h3>Usa contraseñas únicas y fuertes</h3>
+        <p>No reutilices contraseñas entre sitios. Usa un gestor de contraseñas como Bitwarden o 1Password para no tener que memorizarlas todas.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-num">02</div>
+      <div class="tip-content">
+        <h3>Activa la verificación en dos pasos (2FA)</h3>
+        <p>Aunque alguien robe tu contraseña, necesitará un segundo código (de tu celular) para entrar. Es la medida más efectiva disponible.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-num">03</div>
+      <div class="tip-content">
+        <h3>Mantén tu software actualizado</h3>
+        <p>Las actualizaciones corrigen vulnerabilidades conocidas. Activar las actualizaciones automáticas cierra puertas que los atacantes explotan.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-num">04</div>
+      <div class="tip-content">
+        <h3>Desconfía de correos y mensajes sospechosos</h3>
+        <p>El phishing se disfraza de bancos, gobierno o empresas conocidas. Antes de hacer clic, verifica el remitente y la URL real del enlace.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-num">05</div>
+      <div class="tip-content">
+        <h3>Usa redes Wi-Fi con precaución</h3>
+        <p>Las redes públicas (cafeterías, aeropuertos) son inseguras. Evita ingresar a cuentas bancarias o correo sin una VPN en esas redes.</p>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="tip-num">06</div>
+      <div class="tip-content">
+        <h3>Realiza copias de seguridad (backup)</h3>
+        <p>Si sufres un ataque de ransomware o pierdes tu dispositivo, un backup reciente en la nube o disco externo te salva toda la información.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AMENAZAS -->
+<section id="amenazas">
+  <div class="section-tag">Amenazas comunes</div>
+  <h2 class="section-title">¿De qué debes cuidarte?</h2>
+  <p class="section-sub">Conocer las amenazas más frecuentes es el primer paso para evitarlas.</p>
+  <div class="threats-grid">
+    <div class="threat">
+      <div class="threat-badge">Ingeniería social</div>
+      <h3>Phishing</h3>
+      <p>Correos o mensajes falsos que imitan a empresas reales para robar tus datos o contraseñas.</p>
+    </div>
+    <div class="threat">
+      <div class="threat-badge">Malware</div>
+      <h3>Ransomware</h3>
+      <p>Programa que cifra todos tus archivos y exige un pago para devolverte el acceso.</p>
+    </div>
+    <div class="threat">
+      <div class="threat-badge">Redes</div>
+      <h3>Man-in-the-Middle</h3>
+      <p>Un atacante se interpone en tu comunicación, leyendo o modificando los datos sin que lo sepas.</p>
+    </div>
+    <div class="threat">
+      <div class="threat-badge">Ingeniería social</div>
+      <h3>Tailgating</h3>
+      <p>Acceso físico no autorizado siguiendo a alguien autorizado para entrar a zonas restringidas.</p>
+    </div>
+    <div class="threat">
+      <div class="threat-badge">Manipulación</div>
+      <h3>Quid Pro Quo</h3>
+      <p>Alguien ofrece ayuda técnica a cambio de tus credenciales o acceso a tu sistema.</p>
+    </div>
+    <div class="threat">
+      <div class="threat-badge">Web</div>
+      <h3>Envenenamiento SEO</h3>
+      <p>Sitios maliciosos posicionados en buscadores que parecen legítimos pero roban tu información.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRASEÑAS -->
+<section id="contrasenas">
+  <div class="section-tag">Contraseñas</div>
+  <h2 class="section-title">La primera línea de defensa</h2>
+  <p class="section-sub">Una buena contraseña no tiene que ser complicada, solo impredecible.</p>
+  <div class="pwd-section">
+    <div class="pwd-grid">
+      <div class="pwd-bad">
+        <div class="pwd-label">❌ Evita esto</div>
+        <div class="pwd-example">123456</div>
+        <div class="pwd-example">pepito2024</div>
+        <div class="pwd-example">miperro</div>
+        <p class="pwd-tip">Contraseñas cortas, con nombres propios, fechas o palabras del diccionario se descifran en segundos.</p>
+      </div>
+      <div class="pwd-good">
+        <div class="pwd-label">✅ Usa esto</div>
+        <div class="pwd-example">Nuv3$-Lago-Azul!</div>
+        <div class="pwd-example">T1gr3&Mont@ña99</div>
+        <div class="pwd-example">Lluvi@-2031-Torre</div>
+        <p class="pwd-tip">Combina palabras aleatorias + números + símbolos. Fácil de recordar para ti, imposible de adivinar para otros.</p>
+      </div>
+    </div>
+    <div style="margin-top:2rem; padding: 1.5rem; background:rgba(0,132,255,0.08); border:1px solid rgba(0,132,255,0.2); border-radius:12px;">
+      <p style="font-size:14px; color:var(--text2);">💡 <strong style="color:var(--text);">Consejo pro:</strong> Usa un gestor de contraseñas. Él recuerda contraseñas complejas y únicas por ti. Solo debes recordar una contraseña maestra.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARTIR / QR -->
+<section id="compartir">
+  <div class="section-tag">Compartir</div>
+  <h2 class="section-title">Comparte esta guía</h2>
+  <p class="section-sub">Genera un código QR con la URL de esta página para compartirla fácilmente.</p>
+  <div class="qr-section">
+    <h2>Generar código QR</h2>
+    <p>Ingresa la URL donde estará publicada esta página y genera tu QR al instante.</p>
+    <input type="text" id="qr-url-input" placeholder="https://tudominio.com/ciberseguridad.html" />
+    <br>
+    <button id="qr-generate-btn" onclick="generateQR()">Generar QR</button>
+    <div id="qrcode"></div>
+    <p class="qr-hint" id="qr-hint" style="display:none;">Haz clic derecho en el QR para guardarlo como imagen</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Hecho con 💚 para tu seguridad digital · <span>CiberSeguro</span> · Información educativa</p>
+</footer>
+
+<!-- MODAL QR rápido -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <h3>Compartir página</h3>
+    <p>Escanea este QR para acceder a esta guía desde otro dispositivo.</p>
+    <div id="modal-qr"></div>
+    <br>
+    <button class="modal-close" onclick="closeModalBtn()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+  let qrGenerated = false;
+  let modalQrGenerated = false;
+
+  function generateQR() {
+    const url = document.getElementById('qr-url-input').value.trim();
+    if (!url) {
+      alert('Por favor ingresa una URL');
+      return;
+    }
+    const container = document.getElementById('qrcode');
+    container.innerHTML = '';
+    new QRCode(container, {
+      text: url,
+      width: 200, height: 200,
+      colorDark: '#000000', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+    document.getElementById('qr-hint').style.display = 'block';
+  }
+
+  function openModal() {
+    document.getElementById('modal-overlay').classList.add('open');
+    if (!modalQrGenerated) {
+      const container = document.getElementById('modal-qr');
+      container.innerHTML = '';
+      new QRCode(container, {
+        text: window.location.href,
+        width: 180, height: 180,
+        colorDark: '#000000', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+      modalQrGenerated = true;
+    }
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModalBtn();
+  }
+  function closeModalBtn() {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+
+  // Pre-fill input with current URL
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('qr-url-input').value = window.location.href;
+  });
+</script>
+</body>
+</html>
