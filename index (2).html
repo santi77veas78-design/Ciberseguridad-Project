@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShieldNet — Centro de Ciberseguridad</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root {
+  --bg:       #060810;
+  --bg2:      #0c0f1a;
+  --bg3:      #111525;
+  --bg4:      #171c2e;
+  --green:    #00ffa3;
+  --blue:     #3b82f6;
+  --red:      #ff4757;
+  --amber:    #fbbf24;
+  --text:     #eef2ff;
+  --muted:    #6b7ab8;
+  --border:   rgba(255,255,255,0.06);
+  --border2:  rgba(59,130,246,0.2);
+  --card:     rgba(255,255,255,0.03);
+  --glow:     0 0 40px rgba(0,255,163,0.08);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Outfit',sans-serif;
+  overflow-x:hidden;
+  cursor:default;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px;}
+
+/* ── GRID BACKGROUND ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;z-index:0;
+}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;
+  width:240px;
+  background:rgba(6,8,16,0.95);
+  border-right:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;
+  z-index:100;
+  padding:0 0 1.5rem;
+}
+
+/* LOGO */
+.logo{
+  padding:1.5rem 1.5rem 1rem;
+  border-bottom:1px solid var(--border);
+  margin-bottom:1rem;
+  display:flex;align-items:center;gap:10px;
+}
+.logo-icon{
+  width:40px;height:40px;
+  background:linear-gradient(135deg,#00ffa3,#3b82f6);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.logo-icon svg{width:22px;height:22px;}
+.logo-text{
+  display:flex;flex-direction:column;
+}
+.logo-name{
+  font-family:'Space Mono',monospace;
+  font-size:15px;font-weight:700;
+  color:var(--text);letter-spacing:-0.5px;
+}
+.logo-sub{
+  font-size:10px;color:var(--muted);
+  letter-spacing:1.5px;text-transform:uppercase;
+}
+
+/* NAV LINKS */
+.nav-section-label{
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);padding:0 1.5rem;margin:1rem 0 0.5rem;
+}
+.nav-link{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 1.5rem;
+  color:var(--muted);font-size:14px;font-weight:400;
+  cursor:pointer;border:none;background:none;
+  width:100%;text-align:left;
+  border-left:2px solid transparent;
+  transition:all 0.2s;position:relative;
+}
+.nav-link:hover{color:var(--text);background:var(--card);}
+.nav-link.active{
+  color:var(--green);
+  border-left-color:var(--green);
+  background:rgba(0,255,163,0.05);
+}
+.nav-link .nav-icon{font-size:16px;width:20px;text-align:center;}
+.nav-badge{
+  margin-left:auto;font-size:10px;
+  background:rgba(0,255,163,0.15);color:var(--green);
+  padding:2px 8px;border-radius:100px;
+}
+
+/* STATUS */
+.sidebar-status{
+  margin-top:auto;padding:1rem 1.5rem 0;
+  border-top:1px solid var(--border);
+}
+.status-dot{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--muted);
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* ── MAIN ── */
+.main{
+  margin-left:240px;
+  min-height:100vh;
+  position:relative;z-index:1;
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(6,8,16,0.8);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0 2.5rem;
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.topbar-title{
+  font-family:'Space Mono',monospace;
+  font-size:13px;color:var(--muted);
+}
+.topbar-title span{color:var(--green);}
+.topbar-actions{display:flex;gap:10px;align-items:center;}
+.qr-btn{
+  background:rgba(0,255,163,0.1);
+  border:1px solid rgba(0,255,163,0.3);
+  color:var(--green);
+  padding:7px 16px;border-radius:8px;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;transition:all 0.2s;
+}
+.qr-btn:hover{background:rgba(0,255,163,0.18);}
+
+/* ── PAGES ── */
+.page{display:none;padding:2.5rem;}
+.page.active{display:block;animation:pageIn 0.3s ease;}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO INTRO (inicio) ── */
+.hero-intro{
+  position:relative;
+  background:linear-gradient(135deg,rgba(0,255,163,0.04),rgba(59,130,246,0.04));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:3rem;
+  margin-bottom:2rem;
+  overflow:hidden;
+}
+.hero-intro::before{
+  content:'';position:absolute;
+  top:-80px;right:-80px;
+  width:280px;height:280px;
+  background:radial-gradient(circle,rgba(0,255,163,0.08),transparent 70%);
+  pointer-events:none;
+}
+.hero-intro::after{
+  content:'';position:absolute;
+  bottom:-60px;left:40%;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(59,130,246,0.07),transparent 70%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,255,163,0.1);border:1px solid rgba(0,255,163,0.25);
+  color:var(--green);border-radius:100px;
+  padding:5px 14px;font-size:12px;font-weight:500;
+  letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:1.5rem;
+}
+.hero-eyebrow::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 2s infinite;}
+.hero-intro h1{
+  font-size:clamp(2rem,3.5vw,3rem);
+  font-weight:800;letter-spacing:-1.5px;line-height:1.1;
+  margin-bottom:1.5rem;
+}
+.hero-intro h1 em{font-style:normal;color:var(--green);}
+.intro-body{
+  display:grid;grid-template-columns:1fr 1fr;gap:2rem;
+  margin-top:2rem;
+}
+.intro-text p{
+  color:#a0aec9;font-size:15px;line-height:1.85;
+  margin-bottom:1rem;
+}
+.intro-text p strong{color:var(--text);font-weight:500;}
+.intro-pillars{display:flex;flex-direction:column;gap:10px;}
+.pillar{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:12px;padding:14px 16px;
+}
+.pillar-icon{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.pillar-icon.g{background:rgba(0,255,163,0.12);}
+.pillar-icon.b{background:rgba(59,130,246,0.12);}
+.pillar-icon.r{background:rgba(255,71,87,0.12);}
+.pillar h4{font-size:13px;font-weight:600;margin-bottom:2px;}
+.pillar p{font-size:12px;color:var(--muted);}
+
+/* STATS ROW */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;margin-bottom:2rem;
+}
+.stat{background:var(--bg2);padding:1.5rem;text-align:center;}
+.stat-n{
+  font-family:'Space Mono',monospace;
+  font-size:1.8rem;font-weight:700;color:var(--green);
+  margin-bottom:4px;
+}
+.stat-l{font-size:12px;color:var(--muted);}
+
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-bottom:2rem;}
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:1.5rem;
+  transition:border-color 0.3s,transform 0.2s;
+}
+.card:hover{border-color:rgba(0,255,163,0.2);transform:translateY(-2px);}
+.card-icon{font-size:24px;margin-bottom:12px;}
+.card h3{font-size:15px;font-weight:600;margin-bottom:6px;}
+.card p{font-size:13px;color:var(--muted);line-height:1.7;}
+
+/* ── PAGE: FUNDAMENTOS ── */
+.content-block{margin-bottom:2.5rem;}
+.page-title{
+  font-size:clamp(1.5rem,2.5vw,2rem);font-weight:800;
+  letter-spacing:-1px;margin-bottom:0.5rem;
+}
+.page-sub{color:var(--muted);font-size:14px;margin-bottom:2rem;max-width:600px;}
+.tag{
+  display:inline-block;font-size:11px;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--green);margin-bottom:8px;
+}
+
+/* ACCORDION */
+.accordion{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1rem;}
+.acc-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.25rem;background:var(--bg2);
+  cursor:pointer;user-select:none;
+  transition:background 0.2s;
+}
+.acc-header:hover{background:var(--bg3);}
+.acc-header-left{display:flex;align-items:center;gap:10px;}
+.acc-header h3{font-size:14px;font-weight:600;}
+.acc-badge{
+  font-size:11px;padding:2px 10px;border-radius:100px;
+  background:rgba(59,130,246,0.15);color:var(--blue);
+}
+.acc-arrow{
+  font-size:12px;color:var(--muted);
+  transition:transform 0.3s;
+}
+.accordion.open .acc-arrow{transform:rotate(180deg);}
+.acc-body{
+  display:none;
+  padding:1.25rem;
+  background:var(--bg3);
+  border-top:1px solid var(--border);
+  font-size:13px;color:#a0aec9;line-height:1.8;
+}
+.accordion.open .acc-body{display:block;}
+.acc-body ul{padding-left:1.2rem;margin-top:0.5rem;}
+.acc-body ul li{margin-bottom:6px;}
+.acc-body code{
+  font-family:'Space Mono',monospace;font-size:11px;
+  background:var(--bg4);padding:2px 8px;border-radius:5px;color:var(--green);
+}
+
+/* ── PAGE: AMENAZAS ── */
+.threat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;}
+.threat-tab{
+  padding:7px 18px;border-radius:8px;
+  font-size:13px;font-weight:500;
+  border:1px solid var(--border);
+  background:var(--card);color:var(--muted);
+  cursor:pointer;transition:all 0.2s;
+}
+.threat-tab.active{
+  background:rgba(255,71,87,0.15);
+  border-color:rgba(255,71,87,0.4);
+  color:var(--red);
+}
+.threat-tab:hover:not(.active){border-color:rgba(255,255,255,0.15);color:var(--text);}
+.threat-panel{display:none;}
+.threat-panel.active{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;animation:pageIn 0.3s ease;}
+.threat-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:14px;padding:1.5rem;
+  border-left:3px solid var(--red);
+}
+.threat-label{
+  font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  color:var(--red);margin-bottom:8px;
+}
+.threat-card h3{font-size:15px;font-weight:600;margin-bottom:8px;}
+.threat-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:10px;}
+.threat-tip{
+  font-size:12px;color:var(--amber);
+  background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);
+  padding:8px 12px;border-radius:8px;
+}
+
+/* ── PAGE: CONSEJOS ── */
+.tips-steps{display:flex;flex-direction:column;gap:0;}
+.tip-step{
+  display:flex;gap:1.5rem;
+  padding:1.5rem;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--bg2);
+  margin-bottom:10px;
+  transition:border-color 0.2s,transform 0.2s;
+}
+.tip-step:hover{border-color:rgba(0,255,163,0.25);transform:translateX(4px);}
+.tip-num-wrap{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.tip-num{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(0,255,163,0.1);border:1px solid rgba(0,255,163,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--green);
+}
+.tip-difficulty{font-size:10px;color:var(--muted);letter-spacing:1px;}
+.tip-content h3{font-size:15px;font-weight:600;margin-bottom:6px;}
+.tip-content p{font-size:13px;color:var(--muted);line-height:1.7;}
+.tip-content .example{
+  margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;
+  background:var(--bg4);border:1px solid var(--border);
+  padding:8px 12px;border-radius:8px;color:var(--green);
+}
+
+/* ── PAGE: CONTRASEÑAS ── */
+.pwd-checker{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:16px;padding:2rem;margin-bottom:2rem;
+}
+.pwd-checker h3{font-size:16px;font-weight:600;margin-bottom:4px;}
+.pwd-checker p{font-size:13px;color:var(--muted);margin-bottom:1rem;}
+.pwd-input-wrap{position:relative;margin-bottom:1rem;}
+.pwd-input{
+  width:100%;padding:12px 16px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);
+  font-family:'Space Mono',monospace;font-size:14px;
+  outline:none;transition:border-color 0.2s;
+}
+.pwd-input:focus{border-color:rgba(0,255,163,0.4);}
+.pwd-strength{
+  height:4px;border-radius:2px;
+  background:var(--bg3);margin-bottom:6px;overflow:hidden;
+}
+.pwd-strength-bar{
+  height:100%;border-radius:2px;
+  transition:width 0.4s,background 0.4s;
+  width:0%;
+}
+.pwd-label-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
+.pwd-feedback{font-size:13px;color:var(--muted);margin-top:8px;min-height:20px;}
+.pwd-comparison{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;}
+.pwd-col{background:var(--bg2);border-radius:14px;padding:1.5rem;}
+.pwd-col.bad{border:1px solid rgba(255,71,87,0.3);}
+.pwd-col.good{border:1px solid rgba(0,255,163,0.3);}
+.pwd-col-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1rem;}
+.pwd-col.bad .pwd-col-label{color:var(--red);}
+.pwd-col.good .pwd-col-label{color:var(--green);}
+.pwd-example-item{
+  font-family:'Space Mono',monospace;font-size:13px;
+  padding:8px 12px;border-radius:8px;margin-bottom:6px;
+  background:rgba(255,255,255,0.04);
+}
+.pwd-col.bad .pwd-example-item{color:var(--red);}
+.pwd-col.good .pwd-example-item{color:var(--green);}
+.pwd-col p{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;}
+
+/* ── PAGE: COMPARTIR ── */
+.qr-wrapper{
+  max-width:520px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;padding:2.5rem;text-align:center;
+}
+.qr-wrapper h2{font-size:1.5rem;font-weight:700;margin-bottom:6px;}
+.qr-wrapper > p{color:var(--muted);font-size:14px;margin-bottom:1.5rem;}
+.qr-input{
+  width:100%;padding:11px 16px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);
+  font-family:'Outfit',sans-serif;font-size:14px;
+  outline:none;transition:border-color 0.2s;margin-bottom:10px;
+}
+.qr-input:focus{border-color:rgba(0,255,163,0.4);}
+.qr-gen-btn{
+  background:var(--green);color:#060810;
+  border:none;cursor:pointer;
+  padding:11px 28px;border-radius:10px;
+  font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;
+  width:100%;margin-bottom:1.5rem;transition:opacity 0.2s;
+}
+.qr-gen-btn:hover{opacity:0.85;}
+#qrcode2{display:inline-block;background:white;border-radius:12px;padding:16px;}
+.qr-hint{font-size:12px;color:var(--muted);margin-top:10px;}
+
+/* ── MODAL ── */
+.modal-ov{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;
+}
+.modal-ov.open{display:flex;}
+.modal-box{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;padding:2rem;
+  max-width:380px;width:90%;text-align:center;
+}
+.modal-box h3{font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+.modal-box p{color:var(--muted);font-size:13px;margin-bottom:1.5rem;}
+#modal-qr2{display:inline-block;background:white;border-radius:12px;padding:14px;}
+.modal-close{
+  margin-top:1rem;background:var(--card);border:1px solid var(--border);
+  color:var(--text);padding:9px 24px;border-radius:8px;
+  font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;
+}
+
+/* HAMBURGER mobile */
+.hamburger{
+  display:none;position:fixed;top:12px;left:12px;z-index:200;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:8px;cursor:pointer;
+  font-size:18px;color:var(--text);
+}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .hamburger{display:block;}
+  .intro-body{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .page{padding:1.5rem 1rem;}
+  .topbar{padding:0 1rem;}
+  .pwd-comparison{grid-template-columns:1fr;}
+  .threat-panel.active{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HAMBURGER -->
+<button class="hamburger" onclick="toggleSidebar()">☰</button>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">
+      <!-- SHIELD LOGO SVG -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6L12 2Z" fill="rgba(0,255,163,0.2)" stroke="#00ffa3" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M9 12l2 2 4-4" stroke="#00ffa3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <div class="logo-name">ShieldNet</div>
+      <div class="logo-sub">Ciberseguridad</div>
+    </div>
+  </div>
+
+  <span class="nav-section-label">Navegación</span>
+  <button class="nav-link active" onclick="goTo('inicio',this)">
+    <span class="nav-icon">🏠</span> Inicio
+  </button>
+  <button class="nav-link" onclick="goTo('fundamentos',this)">
+    <span class="nav-icon">📘</span> Fundamentos
+  </button>
+  <button class="nav-link" onclick="goTo('amenazas',this)">
+    <span class="nav-icon">⚠️</span> Amenazas <span class="nav-badge">6</span>
+  </button>
+  <button class="nav-link" onclick="goTo('consejos',this)">
+    <span class="nav-icon">🛡️</span> Consejos prácticos
+  </button>
+  <button class="nav-link" onclick="goTo('contrasenas',this)">
+    <span class="nav-icon">🔑</span> Contraseñas
+  </button>
+  <button class="nav-link" onclick="goTo('herramientas',this)">
+    <span class="nav-icon">🔧</span> Herramientas
+  </button>
+  <button class="nav-link" onclick="goTo('compartir',this)">
+    <span class="nav-icon">📱</span> Compartir / QR
+  </button>
+
+  <div class="sidebar-status">
+    <div class="status-dot">
+      <div class="dot"></div>
+      Guía actualizada · 2025
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">ShieldNet / <span id="topbar-section">Inicio</span></div>
+    <div class="topbar-actions">
+      <button class="qr-btn" onclick="openModal()">📱 Compartir QR</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PÁGINA: INICIO ═══════════════ -->
+  <div class="page active" id="page-inicio">
+
+    <div class="hero-intro">
+      <div class="hero-eyebrow">Centro de Ciberseguridad</div>
+      <h1>Tu guía completa para<br>mantenerte seguro en el<br><em>mundo digital</em></h1>
+      <div class="intro-body">
+        <div class="intro-text">
+          <p>Vivimos en una era donde <strong>casi toda nuestra vida ocurre en línea</strong>: nuestras fotos, conversaciones, datos bancarios, historial médico y comunicaciones personales viajan a través de redes digitales todos los días.</p>
+          <p>La <strong>ciberseguridad</strong> es la disciplina que se encarga de proteger esa información. No se trata solo de antivirus o contraseñas: es un conjunto de prácticas, hábitos y conocimientos que cualquier persona puede — y debe — adoptar.</p>
+          <p>Los ataques digitales no discriminan: afectan a empresas, gobiernos y ciudadanos comunes por igual. En 2024, se registraron más de <strong>800 millones de ataques cibernéticos</strong> a nivel global. El <strong>95% de los incidentes</strong> tienen su origen en un error humano: un clic en el lugar equivocado, una contraseña débil, o ignorar una actualización.</p>
+          <p>La buena noticia es que <strong>pequeños cambios en tus hábitos digitales pueden hacer una diferencia enorme</strong>. Esta guía te explica todo lo que necesitas saber, sin tecnicismos, de forma clara y aplicable desde hoy.</p>
+        </div>
+        <div class="intro-pillars">
+          <div class="pillar">
+            <div class="pillar-icon g">🔐</div>
+            <div>
+              <h4>Confidencialidad</h4>
+              <p>Solo quienes están autorizados acceden a tu información.</p>
+            </div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon b">✅</div>
+            <div>
+              <h4>Integridad</h4>
+              <p>Tus datos no son alterados sin tu conocimiento o permiso.</p>
+            </div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon r">⚡</div>
+            <div>
+              <h4>Disponibilidad</h4>
+              <p>Tus sistemas y datos están accesibles cuando los necesitas.</p>
+            </div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon g">👤</div>
+            <div>
+              <h4>Autenticidad</h4>
+              <p>Puedes verificar que quien te contacta es quien dice ser.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">39s</div><div class="stat-l">Entre cada ciberataque global</div></div>
+      <div class="stat"><div class="stat-n">95%</div><div class="stat-l">De incidentes por error humano</div></div>
+      <div class="stat"><div class="stat-n">$4.9M</div><div class="stat-l">Costo promedio de una brecha</div></div>
+      <div class="stat"><div class="stat-n">81%</div><div class="stat-l">Usan contraseñas comprometidas</div></div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <div class="tag">Explora la guía</div>
+      <h2 style="font-size:1.4rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:0.5rem;">¿Por dónde empezar?</h2>
+      <p style="color:var(--muted);font-size:14px;">Usa el menú lateral para navegar entre las secciones.</p>
+    </div>
+    <div class="cards-grid">
+      <div class="card" onclick="goTo('fundamentos',null)" style="cursor:pointer;">
+        <div class="card-icon">📘</div>
+        <h3>Fundamentos</h3>
+        <p>Entiende los conceptos clave: qué es la ciberseguridad, cómo funciona internet y qué son los puertos y protocolos.</p>
+      </div>
+      <div class="card" onclick="goTo('amenazas',null)" style="cursor:pointer;">
+        <div class="card-icon">⚠️</div>
+        <h3>Amenazas</h3>
+        <p>Conoce los tipos de ataques más comunes: phishing, malware, ingeniería social, ransomware y más.</p>
+      </div>
+      <div class="card" onclick="goTo('consejos',null)" style="cursor:pointer;">
+        <div class="card-icon">🛡️</div>
+        <h3>Consejos prácticos</h3>
+        <p>Acciones concretas que puedes aplicar hoy mismo para protegerte, sin necesitar conocimientos técnicos.</p>
+      </div>
+      <div class="card" onclick="goTo('contrasenas',null)" style="cursor:pointer;">
+        <div class="card-icon">🔑</div>
+        <h3>Contraseñas</h3>
+        <p>Aprende a crear contraseñas seguras y usa el verificador interactivo para evaluar las tuyas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PÁGINA: FUNDAMENTOS ═══════════════ -->
+  <div class="page" id="page-fundamentos">
+    <div class="tag">Conceptos base</div>
+    <h1 class="page-title">Fundamentos de Ciberseguridad</h1>
+    <p class="page-sub">Comprende cómo funciona la seguridad digital antes de aplicarla.</p>
+
+    <div class="content-block">
+      <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem;">Protocolos y comunicación</h2>
+      <div class="accordion open">
+        <div class="acc-header" onclick="toggleAcc(this)">
+          <div class="acc-header-left">
+            <span>🌐</span>
+            <h3>HTTP vs HTTPS</h3>
+            <span class="acc-badge">Esencial</span>
+          </div>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <p><strong style="color:var(--text);">HTTP (Puerto 80):</strong> Protocolo de transferencia de hipertexto. Transmite datos en texto plano, sin ningún tipo de cifrado. Cualquier persona en la misma red puede interceptar y leer la información.</p>
+          <p style="margin-top:8px;"><strong style="color:var(--text);">HTTPS (Puerto 443):</strong> La versión segura. Usa cifrado TLS/SSL para proteger los datos en tránsito. Un candado 🔒 en tu navegador indica que la conexión es HTTPS.</p>
+          <p style="margin-top:8px;"><strong style="color:var(--amber);">Regla:</strong> Nunca ingreses contraseñas o datos bancarios en sitios sin HTTPS.</p>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header" onclick="toggleAcc(this)">
+          <div class="acc-header-left">
+            <span>🔌</span>
+            <h3>Puertos de red</h3>
+            <span class="acc-badge">Importante</span>
+          </div>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <p>Un puerto es un canal lógico de comunicación en un sistema. Existen 65,535 puertos. Los más conocidos (0-1023) están reservados para servicios estándar:</p>
+          <ul style="margin-top:10px;">
+            <li><code>20/21</code> → FTP — Transferencia de archivos</li>
+            <li><code>22</code> → SSH — Acceso remoto seguro</li>
+            <li><code>23</code> → Telnet — Acceso remoto sin cifrado (inseguro)</li>
+            <li><code>25</code> → SMTP — Envío de correo electrónico</li>
+            <li><code>53</code> → DNS — Resolución de nombres de dominio</li>
+            <li><code>80</code> → HTTP — Web sin cifrado</li>
+            <li><code>443</code> → HTTPS — Web con cifrado TLS</li>
+            <li><code>3306</code> → MySQL — Base de datos</li>
+            <li><code>3389</code> → RDP — Escritorio remoto Windows</li>
+          </ul>
+          <p style="margin-top:10px;">Un atacante puede escanear puertos abiertos en un sistema usando herramientas como <strong style="color:var(--green);">Nmap</strong> para encontrar posibles puntos de entrada.</p>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header" onclick="toggleAcc(this)">
+          <div class="acc-header-left">
+            <span>🗺️</span>
+            <h3>Nmap — Escaneo de redes</h3>
+            <span class="acc-badge">Herramienta</span>
+          </div>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <p>Nmap (Network Mapper) es una herramienta open source para exploración de redes y auditorías de seguridad. Permite descubrir hosts, puertos abiertos, servicios y sistemas operativos.</p>
+          <ul style="margin-top:10px;">
+            <li><code>nmap 192.168.1.1</code> — Escaneo básico de host</li>
+            <li><code>nmap -sV 192.168.1.1</code> — Detectar versión de servicios</li>
+            <li><code>nmap -p 80,443 192.168.1.1</code> — Puertos específicos</li>
+            <li><code>nmap -O 192.168.1.1</code> — Detectar sistema operativo</li>
+            <li><code>nmap -A 192.168.1.1</code> — Escaneo agresivo completo</li>
+            <li><code>nmap -sn 192.168.1.0/24</code> — Descubrir hosts en red local</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header" onclick="toggleAcc(this)">
+          <div class="acc-header-left">
+            <span>🐧</span>
+            <h3>Sistemas operativos: Windows, Kali Linux y macOS</h3>
+          </div>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-body">
+          <p><strong style="color:var(--text);">Windows:</strong> Mayor compatibilidad, ideal para gaming y oficina. Más vulnerable a malware por su popularidad. Requiere buenas prácticas de seguridad.</p>
+          <p style="margin-top:8px;"><strong style="color:var(--text);">Kali Linux:</strong> Distribución basada en Debian diseñada para pentesting y auditoría de seguridad. Incluye +600 herramientas (Nmap, Metasploit, Wireshark). No recomendado como SO de uso diario.</p>
+          <p style="margin-top:8px;"><strong style="color:var(--text);">macOS:</strong> Excelente seguridad y estabilidad. Ecosistema cerrado que limita la exposición a malware. Ideal para desarrollo y profesionales creativos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PÁGINA: AMENAZAS ═══════════════ -->
+  <div class="page" id="page-amenazas">
+    <div class="tag">Riesgos digitales</div>
+    <h1 class="page-title">Amenazas y Ataques</h1>
+    <p class="page-sub">Conoce las técnicas que usan los atacantes para comprometer tu seguridad.</p>
+
+    <div class="threat-tabs">
+      <button class="threat-tab active" onclick="switchThreat('ingenieria',this)">Ingeniería social</button>
+      <button class="threat-tab" onclick="switchThreat('malware',this)">Malware</button>
+      <button class="threat-tab" onclick="switchThreat('red',this)">Ataques de red</button>
+    </div>
+
+    <div class="threat-panel active" id="tp-ingenieria">
+      <div class="threat-card">
+        <div class="threat-label">Ingeniería social</div>
+        <h3>Phishing</h3>
+        <p>Correos, SMS o mensajes que imitan a empresas reales (bancos, gobierno, redes sociales) para robar tus credenciales o instalar malware. Suelen crear urgencia: "Tu cuenta será bloqueada en 24h".</p>
+        <div class="threat-tip">💡 Verifica siempre el remitente y la URL real antes de hacer clic. Nunca ingreses datos por un enlace de correo.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Ingeniería social</div>
+        <h3>Tailgating (infiltración)</h3>
+        <p>Técnica física: un atacante sigue a una persona autorizada para acceder a áreas restringidas sin credenciales propias. Ejemplo: entrar a una oficina detrás de alguien con tarjeta de acceso.</p>
+        <div class="threat-tip">💡 Nunca permitas que alguien entre contigo a zonas seguras sin identificarse.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Ingeniería social</div>
+        <h3>Quid Pro Quo</h3>
+        <p>El atacante ofrece algo a cambio de información o acceso. Ej: llamar haciéndose pasar por soporte técnico y pedir credenciales "para ayudarte a resolver un problema".</p>
+        <div class="threat-tip">💡 El soporte legítimo nunca te pedirá tu contraseña. Verifica la identidad por canales oficiales.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Ingeniería social</div>
+        <h3>Envenenamiento SEO</h3>
+        <p>Los atacantes posicionan sitios maliciosos en los primeros resultados de búsqueda mediante técnicas de SEO. El usuario cree acceder a un sitio legítimo pero sus datos son robados.</p>
+        <div class="threat-tip">💡 Accede a sitios importantes directamente desde marcadores o escribiendo la URL tú mismo.</div>
+      </div>
+    </div>
+
+    <div class="threat-panel" id="tp-malware">
+      <div class="threat-card">
+        <div class="threat-label">Código malicioso</div>
+        <h3>Ransomware</h3>
+        <p>Cifra todos tus archivos y exige un pago (rescate) para devolverte el acceso. Ha paralizado hospitales, empresas y gobiernos enteros. No pagar no garantiza recuperar los archivos.</p>
+        <div class="threat-tip">💡 La mejor defensa es un backup reciente y actualizado fuera del equipo.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Código malicioso</div>
+        <h3>Botnet</h3>
+        <p>Red de dispositivos infectados controlados remotamente por un atacante. Se usan para lanzar ataques DDoS, enviar spam masivo o minar criptomonedas sin que el dueño lo sepa.</p>
+        <div class="threat-tip">💡 Mantén tu router y dispositivos actualizados. Cambia las contraseñas por defecto.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Código malicioso</div>
+        <h3>Troyano</h3>
+        <p>Se disfraza de software legítimo (juego, utilidad, instalador) para infectar el sistema. Una vez dentro, puede robar datos, abrir puertas traseras o descargar más malware.</p>
+        <div class="threat-tip">💡 Descarga software solo de fuentes oficiales y verifica las firmas digitales.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Código malicioso</div>
+        <h3>Spyware</h3>
+        <p>Monitorea en secreto tu actividad: teclas pulsadas, capturas de pantalla, datos bancarios, conversaciones. Muy difícil de detectar sin herramientas especializadas.</p>
+        <div class="threat-tip">💡 Usa un buen antivirus y revisa los permisos de las aplicaciones instaladas.</div>
+      </div>
+    </div>
+
+    <div class="threat-panel" id="tp-red">
+      <div class="threat-card">
+        <div class="threat-label">Ataque de red</div>
+        <h3>DoS / DDoS</h3>
+        <p>DoS (Denial of Service): inunda un servidor con peticiones desde un origen para dejarlo inaccesible. DDoS: lo mismo pero usando miles de dispositivos (botnet). Puede tumbar sitios web enteros.</p>
+        <div class="threat-tip">💡 Como usuario, protege tu dispositivo para que no se convierta en parte de una botnet.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Ataque de red</div>
+        <h3>MitM / MitMo</h3>
+        <p>Man-in-the-Middle: el atacante se interpone en tu comunicación leyendo o modificando los datos. MitMo (Mobile): variante que intercepta los SMS de verificación en dos pasos en tu celular.</p>
+        <div class="threat-tip">💡 Usa VPN en redes públicas y prefiere apps de autenticación (Google Authenticator) sobre SMS.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Vulnerabilidad</div>
+        <h3>SQL Injection</h3>
+        <p>Inserción de código SQL malicioso en formularios web para manipular bases de datos. Un atacante puede robar, modificar o eliminar todos los datos de una aplicación web vulnerable.</p>
+        <div class="threat-tip">💡 Para usuarios: evita sitios sin HTTPS. Para devs: usa consultas parametrizadas siempre.</div>
+      </div>
+      <div class="threat-card">
+        <div class="threat-label">Vulnerabilidad</div>
+        <h3>Zero-Day</h3>
+        <p>Vulnerabilidad desconocida por el fabricante del software, para la que no existe parche. Los atacantes la explotan antes de que sea descubierta y corregida.</p>
+        <div class="threat-tip">💡 Mantén siempre el software actualizado para reducir la superficie de ataque.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PÁGINA: CONSEJOS ═══════════════ -->
+  <div class="page" id="page-consejos">
+    <div class="tag">Guía práctica</div>
+    <h1 class="page-title">Consejos Prácticos</h1>
+    <p class="page-sub">Acciones concretas ordenadas de más a menos urgentes. Empieza desde arriba.</p>
+
+    <div class="tips-steps">
+      <div class="tip-step">
+        <div class="tip-num-wrap">
+          <div class="tip-num">01</div>
+          <span class="tip-difficulty">CRÍTICO</span>
+        </div>
+        <div class="tip-content">
+          <h3>Activa la verificación en dos pasos (2FA)</h3>
+          <p>Es la medida más efectiva disponible. Aunque alguien robe tu contraseña, necesitará un segundo código de tu celular para entrar. Actívala en correo, redes sociales y banca en línea.</p>
+          <div class="example">Google Authenticator · Microsoft Authenticator · Authy</div>
+        </div>
+      </div>
+      <div class="tip-step">
+        <div class="tip-num-wrap">
+          <div class="tip-num">02</div>
+          <span class="tip-difficulty">CRÍTICO</span>
+        </div>
+        <div class="tip-content">
+          <h3>Usa contraseñas únicas en cada servicio</h3>
+          <p>Reutilizar contraseñas es el error más común. Si un sitio es hackeado, todos tus demás servicios quedan expuestos. Usa un gestor de contraseñas para no tener que memorizarlas.</p>
+          <div class="example">Bitwarden (gratis) · 1Password · KeePass</div>
+        </div>
+      </div>
+      <div class="tip-step">
+        <div class="tip-num-wrap">
+          <div class="tip-num">03</div>
+          <span class="tip-difficulty">ALTO</span>
+        </div>
+        <div class="tip-content">
+          <h3>Mantén tu software siempre actualizado</h3>
+          <p>Las actualizaciones corrigen vulnerabilidades conocidas. Los atacantes explotan versiones desactualizadas durante meses. Activa las actualizaciones automáticas en tu sistema operativo y apps.</p>
+          <div class="example">Configuración → Actualización automática → Activar</div>
+        </div>
+      </div>
+      <div class="tip-step">
+        <div class="tip-num-wrap">
+          <div class="tip-num">04</div>
+          <span class="tip-difficulty">ALTO</span>
+        </div>
+        <div class="tip-content">
+          <h3>Desconfía de correos y mensajes inesperados</h3>
+          <p>Antes de hacer clic en un enlace, pasa el cursor sobre él para ver la URL real. Desconfía de mensajes que crean urgencia o piden datos personales. Verifica por canales oficiales si tienes dudas.</p>
+          <div class="example">URL real: hover sobre el enlace → barra inferior del navegador</div>
+        </div>
+      </div>
+      <div class="tip-step">
+        <div class="tip-num-wrap">
+          <div class="tip-num">05</div>
+          <span class="tip-difficulty">MEDIO</span>
+        </div>
+        <div class="tip-content">
+          <h3>Haz copias de seguridad (backup) regularmente</h3>
+          <p>Un backup reciente te salva de ransomware, fallos de hardware y pérdida accidental. Aplica la regla 3-2-1: 3 copias, en 2 medios diferentes, 1 fuera del lugar físico.</p>
+          <div class="example">Google Drive / iCloud + Disco externo = regla 3-2-1 cumplida</div>
+        </div>
+      </div>
+      <div class="tip-step">
+        <div class="tip-num-wrap">
+          <div class="tip-num">06</div>
+          <span class="tip-difficulty">MEDIO</span>
+        </div>
+        <div class="tip-content">
+          <h3>Usa una VPN en redes Wi-Fi públicas</h3>
+          <p>Las redes de cafeterías, aeropuertos o centros comerciales son inseguras. Una VPN cifra tu tráfico y evita que alguien en la misma red intercepte tus datos.</p>
+          <div class="example">ProtonVPN (gratis) · Mullvad · NordVPN</div>
+        </div>
+      </div>
+      <div class="tip-step">
+        <div class="tip-num-wrap">
+          <div class="tip-num">07</div>
+          <span class="tip-difficulty">MEDIO</span>
+        </div>
+        <div class="tip-content">
+          <h3>Revisa los permisos de tus aplicaciones</h3>
+          <p>¿Tu linterna necesita acceso a tus contactos? Muchas apps solicitan más permisos de los necesarios. Revisa y revoca permisos innecesarios en tu celular periódicamente.</p>
+          <div class="example">Ajustes → Privacidad → Permisos de apps</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PÁGINA: CONTRASEÑAS ═══════════════ -->
+  <div class="page" id="page-contrasenas">
+    <div class="tag">Seguridad base</div>
+    <h1 class="page-title">Contraseñas Seguras</h1>
+    <p class="page-sub">Tu primera y más importante línea de defensa digital.</p>
+
+    <div class="pwd-checker">
+      <h3>🔍 Verificador de fortaleza</h3>
+      <p>Escribe una contraseña para ver qué tan segura es (no se guarda ni se envía).</p>
+      <div class="pwd-input-wrap">
+        <input type="password" class="pwd-input" id="pwd-test" placeholder="Escribe tu contraseña aquí..." oninput="checkPwd(this.value)">
+      </div>
+      <div class="pwd-strength"><div class="pwd-strength-bar" id="pwd-bar"></div></div>
+      <div class="pwd-label-row">
+        <span>Fortaleza</span>
+        <span id="pwd-level">—</span>
+      </div>
+      <div class="pwd-feedback" id="pwd-fb"></div>
+    </div>
+
+    <div class="pwd-comparison">
+      <div class="pwd-col bad">
+        <div class="pwd-col-label">❌ Evitar</div>
+        <div class="pwd-example-item">123456</div>
+        <div class="pwd-example-item">pepito2024</div>
+        <div class="pwd-example-item">miperro</div>
+        <div class="pwd-example-item">qwerty</div>
+        <p>Cortas, predecibles, con nombres propios o fechas. Un ataque de fuerza bruta las descifra en segundos.</p>
+      </div>
+      <div class="pwd-col good">
+        <div class="pwd-col-label">✅ Usar</div>
+        <div class="pwd-example-item">Nube$-Lago-7Azul!</div>
+        <div class="pwd-example-item">T1gr3&Mont@ña99</div>
+        <div class="pwd-example-item">Lluvi@-2031-Torre</div>
+        <div class="pwd-example-item">#Coral!Viento52K</div>
+        <p>Largas (16+ chars), con mayúsculas, números y símbolos. Difíciles de adivinar, posibles de recordar.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">📋</div>
+      <h3>Reglas de oro para contraseñas</h3>
+      <ul style="font-size:13px;color:var(--muted);padding-left:1.2rem;line-height:2;margin-top:8px;">
+        <li>Mínimo <strong style="color:var(--text);">16 caracteres</strong> — la longitud es más importante que la complejidad</li>
+        <li><strong style="color:var(--text);">Nunca reutilices</strong> la misma contraseña en dos sitios</li>
+        <li>Usa un <strong style="color:var(--text);">gestor de contraseñas</strong> — solo debes recordar una</li>
+        <li>Combina palabras aleatorias: <strong style="color:var(--green);">Cielo-Mango-Puerta-7</strong> es muy segura y recordable</li>
+        <li>Cambia contraseñas si sospechas que fueron comprometidas (usa <strong style="color:var(--text);">haveibeenpwned.com</strong>)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PÁGINA: HERRAMIENTAS ═══════════════ -->
+  <div class="page" id="page-herramientas">
+    <div class="tag">Recursos recomendados</div>
+    <h1 class="page-title">Herramientas Esenciales</h1>
+    <p class="page-sub">Software y servicios gratuitos (o de bajo costo) para mejorar tu seguridad.</p>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">🔐</div>
+        <h3>Bitwarden</h3>
+        <p>Gestor de contraseñas open source y gratuito. Almacena y genera contraseñas únicas para cada sitio. Disponible en todas las plataformas.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔑</div>
+        <h3>Google Authenticator</h3>
+        <p>App de verificación en dos pasos (2FA). Genera códigos temporales de 6 dígitos cada 30 segundos para proteger tus cuentas.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h3>ProtonVPN</h3>
+        <p>VPN gratuita y sin límite de datos de los creadores de ProtonMail. Cifra tu tráfico en redes públicas. Basada en Suiza.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3>Have I Been Pwned</h3>
+        <p>Servicio gratuito que te dice si tu correo o contraseña aparece en alguna base de datos filtrada. Visita haveibeenpwned.com.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3>Malwarebytes</h3>
+        <p>Antimalware gratuito para detectar y eliminar amenazas que los antivirus tradicionales pasan por alto. Complementa a Windows Defender.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📧</div>
+        <h3>ProtonMail</h3>
+        <p>Correo electrónico cifrado de extremo a extremo. Gratuito, sin publicidad, basado en Suiza con estrictas leyes de privacidad.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🗺️</div>
+        <h3>Nmap</h3>
+        <p>Escáner de red gratuito para descubrir dispositivos y puertos abiertos en tu red. Usado por administradores y pentesters.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧅</div>
+        <h3>Tor Browser</h3>
+        <p>Navegador que anonimiza tu tráfico enrutándolo por múltiples servidores. Ideal para mayor privacidad en situaciones sensibles.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PÁGINA: COMPARTIR ═══════════════ -->
+  <div class="page" id="page-compartir">
+    <div class="tag">Difusión</div>
+    <h1 class="page-title">Compartir esta guía</h1>
+    <p class="page-sub">Genera un código QR con la URL de esta página para compartirla.</p>
+    <div class="qr-wrapper">
+      <h2>📱 Código QR</h2>
+      <p>Ingresa la URL donde esté publicada esta página y genera tu QR al instante para compartirlo.</p>
+      <input type="text" class="qr-input" id="qr-url" placeholder="https://tu-usuario.github.io/ciberseguridad-v2.html">
+      <button class="qr-gen-btn" onclick="generateQR2()">Generar código QR</button>
+      <div id="qrcode2"></div>
+      <p class="qr-hint" id="qr-hint2" style="display:none;">Haz clic derecho sobre el QR para guardarlo como imagen 📥</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL QR -->
+<div class="modal-ov" id="modal-ov" onclick="closeModal(event)">
+  <div class="modal-box">
+    <h3>📱 Compartir ShieldNet</h3>
+    <p>Escanea este QR para abrir esta guía en otro dispositivo.</p>
+    <div id="modal-qr2"></div>
+    <br>
+    <button class="modal-close" onclick="closeModalBtn()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+// ── NAVIGATION ──
+const sections = {
+  inicio:'Inicio', fundamentos:'Fundamentos', amenazas:'Amenazas',
+  consejos:'Consejos prácticos', contrasenas:'Contraseñas',
+  herramientas:'Herramientas', compartir:'Compartir / QR'
+};
+
+function goTo(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('topbar-section').textContent = sections[id];
+  if (btn) { btn.classList.add('active'); }
+  else {
+    document.querySelectorAll('.nav-link').forEach(b => {
+      if (b.textContent.trim().startsWith(sections[id]?.split(' ')[0])) b.classList.add('active');
+    });
+  }
+  if (window.innerWidth < 768) closeSidebar();
+}
+
+// ── SIDEBAR MOBILE ──
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');}
+
+// ── ACCORDION ──
+function toggleAcc(header) {
+  const acc = header.parentElement;
+  acc.classList.toggle('open');
+}
+
+// ── THREAT TABS ──
+function switchThreat(id, btn) {
+  document.querySelectorAll('.threat-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.threat-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tp-'+id).classList.add('active');
+}
+
+// ── PASSWORD CHECKER ──
+function checkPwd(v) {
+  const bar = document.getElementById('pwd-bar');
+  const level = document.getElementById('pwd-level');
+  const fb = document.getElementById('pwd-fb');
+  if (!v) { bar.style.width='0'; level.textContent='—'; fb.textContent=''; return; }
+  let score = 0;
+  if (v.length >= 8) score++;
+  if (v.length >= 12) score++;
+  if (v.length >= 16) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[a-z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const levels = [
+    {w:'14%',  c:'#ff4757', l:'Muy débil',   f:'Demasiado corta o simple. Cámbiala ya.'},
+    {w:'28%',  c:'#ff4757', l:'Débil',        f:'Agrega más caracteres y símbolos.'},
+    {w:'42%',  c:'#fbbf24', l:'Regular',      f:'Mejor, pero aún mejorable. Añade longitud.'},
+    {w:'56%',  c:'#fbbf24', l:'Aceptable',    f:'Podría ser más larga. Apunta a 16+ caracteres.'},
+    {w:'70%',  c:'#3b82f6', l:'Buena',        f:'Buena contraseña. Asegúrate de no reutilizarla.'},
+    {w:'85%',  c:'#00ffa3', l:'Muy buena',    f:'¡Excelente! Guárdala en un gestor de contraseñas.'},
+    {w:'100%', c:'#00ffa3', l:'Excelente 🔐', f:'Contraseña muy segura. ¡Bien hecho!'},
+  ];
+  const idx = Math.min(score, levels.length-1);
+  bar.style.width = levels[idx].w;
+  bar.style.background = levels[idx].c;
+  level.textContent = levels[idx].l;
+  level.style.color = levels[idx].c;
+  fb.textContent = levels[idx].f;
+}
+
+// ── QR GENERATOR ──
+let qrGen = false, modalQrGen = false;
+
+function generateQR2() {
+  const url = document.getElementById('qr-url').value.trim();
+  if (!url) { alert('Por favor ingresa una URL'); return; }
+  const c = document.getElementById('qrcode2');
+  c.innerHTML = '';
+  new QRCode(c, {text:url, width:200, height:200, colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.H});
+  document.getElementById('qr-hint2').style.display = 'block';
+}
+
+function openModal() {
+  document.getElementById('modal-ov').classList.add('open');
+  if (!modalQrGen) {
+    const c = document.getElementById('modal-qr2');
+    c.innerHTML = '';
+    new QRCode(c, {text: window.location.href, width:180, height:180, colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.H});
+    modalQrGen = true;
+  }
+}
+function closeModal(e) { if (e.target === document.getElementById('modal-ov')) closeModalBtn(); }
+function closeModalBtn() { document.getElementById('modal-ov').classList.remove('open'); }
+
+// Pre-fill QR input
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('qr-url').value = window.location.href;
+});
+</script>
+</body>
+</html>
